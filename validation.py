@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from user import InvalidAPIUsage
 
 
@@ -17,10 +19,15 @@ def validate_number_game_parameters(content):
 
 
 def validate_geo_game_parameters(content):
-    #  sammy does magic
-    pass
+    # sammy does magic
+    raise NotImplementedError("Sorry we have not created this game type yet")
 
 
-def validate_number_grid_parameters(content):
+def validate_grid_game_parameters(content):
+
     #  sammy does magic
+
+
+
+
     pass

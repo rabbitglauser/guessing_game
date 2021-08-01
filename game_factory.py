@@ -4,7 +4,7 @@ import time
 from battleship_game_factory import make_battle_ship_game
 from user import InvalidAPIUsage
 from validation import validate_word_game_parameters, validate_number_game_parameters, validate_geo_game_parameters, \
-    validate_number_grid_parameters
+    validate_grid_game_parameters
 
 
 def make_game(user_name, content):
@@ -22,7 +22,7 @@ def make_game(user_name, content):
         validate_geo_game_parameters(content)
         return create_geo_game(user_name, content)
     elif game_type == "GRID":
-        validate_number_grid_parameters(content)
+        validate_grid_game_parameters(content)
         return create_grid_game(user_name, content)
     else:
         raise InvalidAPIUsage(f"The game type {game_type} is not supported")
