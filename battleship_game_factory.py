@@ -1,10 +1,12 @@
 import random
 
+from user import InvalidAPIUsage
+
 battle_ship_list = []
 with open("us_states.txt", "r") as f:
     states = f.readlines()
     for state in states:
-        battle_ship_list.append("USS " + state.replace("\n",""))
+        battle_ship_list.append("USS " + state.replace("\n", ""))
 
 
 def make_battle_ship_game(user_name, game, content):
@@ -15,7 +17,7 @@ def make_battle_ship_game(user_name, game, content):
     boat_names = get_unique_boat_names(num_boats)
     boats = []
     for i in range(len(boat_names)):
-        boats.append(make_random_boat(boat_names[i], grid_size))
+        boats.append(make_random_boat(boat_names[i], grid_size, boats))
     game["grid_size"] = grid_size
     game["boats"] = boats
     return game
@@ -27,10 +29,10 @@ def calculate_number_of_boats(grid_size, difficulty_level):
     return num_boats
 
 
-def make_random_boat(boat_name, grid_size):
-    boat_length = random.randint(2 , 5)
+def make_random_boat(boat_name, grid_size, boats):
+    boat_length = random.randint(2, 5)
     orientation = random.randint(0, 1)
-    coordinates = find_random_location_for_boat(grid_size, boat_length, orientation)
+    coordinates = find_random_location_for_boat(grid_size, boat_length, orientation, boats)
     boat = {"name": boat_name, "coordinates": coordinates}
     return boat
 
@@ -44,8 +46,27 @@ def get_unique_boat_names(num_boats):
     return list(boat_names)
 
 
-def find_random_location_for_boat(grid_size, boat_length, orientation):
+def find_random_location_for_boat(grid_size, boat_length, orientation, boats):
     # TODO: find a random location that does not intersect another already existing boat
     coordinates = []
 
-    return coordinates
+    # while there is an intersection of existing boats
+    num_searches = 0
+    while True:
+        num_searches += 1
+
+        # get a random location for the boat
+
+        # get the coordinates for the boat
+
+        # check if the new boat is going to intersection with the existing boats
+        if no_intersection_with_existing_boats(coordinates, boats):
+            return coordinates
+        if num_searches > 100:
+            raise InvalidAPIUsage(
+                "Unable to construct the game with the given parameters. Can not places boats on grid")
+
+
+def no_intersection_with_existing_boats(coordinates, boats):
+    # check for an intersection between new boat and existing boats
+    return True
