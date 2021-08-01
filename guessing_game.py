@@ -2,6 +2,8 @@ import random
 import time
 
 from db import DB
+from game_factory import make_game
+from user import InvalidAPIUsage
 
 GUESSING_GAME_DATABASE = "GuessingGame"
 GAME_COLLECTION = "Game"
@@ -21,26 +23,12 @@ class GuessingGame:
         else:
             return False
 
-    def create_game(self, user_name, name, question, answer):
+    def create_game(self, user_name, content):
         if self.is_user_name_invalid(user_name):
             return None
 
-        # If the creator did not specify a number, then we randomly assign one
-        if not answer:
-            answer = random.randint(0, 100)
-
-        # Create the game using the given parameters
+        game = make_game(user_name, content)
         games_collection = self.db.get_collection(GAME_COLLECTION)
-        game = {
-            "_id": int(time.time()),
-            "name": name,
-            "question": question,
-            "answer": answer,
-            "players": [user_name],
-            "start_time": None,
-            "finish_time": None,
-            "winner": None
-        }
         response = games_collection.insert_one(game)
         return self.start_game(response.inserted_id)
 
@@ -107,11 +95,17 @@ class GuessingGame:
         if error_message:
             return error_message
 
-        #  check if it is a number or word game based on answer
-        if type(game["answer"]) == int or game["answer"].isdigit():
-            return self.play_number_game(game_id, game, user_name, user_answer)
-        else:
+        game_type = game["type"]
+        if game_type == "WORD":
             return self.play_word_game(game_id, game, user_name, user_answer)
+        elif game_type == "NUMBER":
+            return self.play_number_game(game_id, game, user_name, user_answer)
+        elif game_type == "GEO":
+            return self.play_geo_game(game_id, game, user_name, user_answer)
+        elif game_type == "GRID":
+            return self.play_grid_game(game_id, game, user_name, user_answer)
+        else:
+            raise InvalidAPIUsage(f"The game type {game_type} is not supported")
 
     def play_number_game(self, game_id, game, user_name, user_answer):
         if not user_answer.isdigit():
@@ -132,6 +126,12 @@ class GuessingGame:
             return "Congratulations you won"
         else:
             return "That is not the right answer. Keep trying"
+
+    def play_grid_game(self, game_id, game, user_name, user_answer):
+        raise NotImplementedError(f"The grid game has not been implemented yet")
+
+    def play_geo_game(self, game_id, game, user_name, user_answer):
+        raise NotImplementedError(f"The geo game has not been implemented yet")
 
     def end_game(self, game_id, user_name):
         games_collection = self.db.get_collection(GAME_COLLECTION)

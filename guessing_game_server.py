@@ -14,13 +14,16 @@ def invalid_api_usage(e):
     return jsonify(e.to_dict())
 
 
+@app.errorhandler(NotImplementedError)
+def functionality_not_implemented(e):
+    return jsonify(str(e))
+
+
 @app.route('/api/game', methods=['POST'])
 def create_game():
     user_name = checkUserLoggedIn()
     content = request.get_json(force=True)
-    if "question" not in content:
-        return "invalid request parameters"
-    message = game.create_game(user_name, content["name"], content["question"], content["answer"])
+    message = game.create_game(user_name, content)
     if message is None:
         return {"error": "unable to create the game"}
     return {"message": message}
