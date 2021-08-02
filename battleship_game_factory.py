@@ -1,8 +1,11 @@
+import json
 import random
+
+from flask import jsonify
 
 from global_constants import HORIZONTAL, VERTICAL, MAX_BOAT_PLACEMENTS_ATTEMPTS, HORIZONTAL_STR, MIN_BOAT_LENGTH, \
     MAX_BOAT_LENGTH, VERTICAL_STR, DIFFICULTY_ADJUSTMENT_LOW, DIFFICULTY_ADJUSTMENT_HIGH, DIFFICULTY_LEVEL_LOW, \
-    GRID_DIVISOR
+    GRID_DIVISOR, MAX_GRID_SIZE, MIN_GRID_SIZE
 from user import InvalidAPIUsage
 
 battle_ship_list = []
@@ -22,6 +25,7 @@ def make_battle_ship_game(user_name, game, content):
     for i in range(len(boat_names)):
         boats.append(make_random_boat(boat_names[i], grid_size, boats))
     game["grid_size"] = grid_size
+    game["num_boats"] = len(boats)
     game["boats"] = boats
     return game
 
@@ -67,6 +71,8 @@ def find_random_location_for_boat(grid_size, boat_length, orientation, boats):
         if no_collision_with_existing_boats(coordinates, boats):
             return coordinates
         if num_searches > MAX_BOAT_PLACEMENTS_ATTEMPTS:
+            print(f"FAILED: Num attempts [{num_searches}] to place boat into grid [{grid_size}]"
+                  f" num boats[{len(boats)}] boats[{json.dumps(boats)}]")
             raise InvalidAPIUsage(
                 "Unable to construct the game with the given parameters. Can not places boats on grid")
 
@@ -74,11 +80,15 @@ def find_random_location_for_boat(grid_size, boat_length, orientation, boats):
 #  Get the starting point coordinates for the boat, taking into account
 #  the length and orientation of the boat
 def get_location_in_grid(grid_size, boat_length, orientation):
+    if boat_length > grid_size:
+        raise InvalidAPIUsage(f"Unable to construct the game. "
+                              f"Boat length [{boat_length}] must be less than the grid_size [{grid_size}]")
+
     # get a random location for the boat
-    x_limits = grid_size - boat_length if orientation == HORIZONTAL else grid_size
-    y_limits = grid_size - boat_length if orientation == VERTICAL else grid_size
-    x_loc = random.randint(0, x_limits - 1)
-    y_loc = random.randint(0, y_limits - 1)
+    x_limits = grid_size - boat_length if orientation == HORIZONTAL else grid_size - 1
+    y_limits = grid_size - boat_length if orientation == VERTICAL else grid_size - 1
+    x_loc = random.randint(0, x_limits)
+    y_loc = random.randint(0, y_limits)
     return {"x": x_loc, "y": y_loc}
 
 
@@ -96,12 +106,9 @@ def calculate_boat_coordinates(start_coordinate, orientation, boat_length):
 
 # Check if the coordinates of the boat collide with any of the coordinates of the other boats
 def no_collision_with_existing_boats(new_boat_coordinates, boats):
-    # TODO check for an collision between new boat and existing boats
-
-    print("New boat", new_boat_coordinates)
-    print("Existing Boats", boats)
-    print()
-
-
-
+    all_boat_coordinates = [coords for boat in boats for coords in boat["coordinates"]]
+    for boat_grid_ref in new_boat_coordinates:
+        for grid_ref in all_boat_coordinates:
+            if boat_grid_ref["x"] == grid_ref["x"] and boat_grid_ref["y"] == grid_ref["y"]:
+                return False
     return True
