@@ -1,5 +1,4 @@
-from pprint import pprint
-
+from global_constants import MIN_GRID_SIZE, MAX_GRID_SIZE
 from user import InvalidAPIUsage
 
 
@@ -27,7 +26,7 @@ def validate_grid_game_parameters(content):
         raise InvalidAPIUsage("The grid_size is a mandatory parameter for this game")
 
     grid_size = content["grid_size"]
-    if grid_size < 8 or grid_size > 100:
+    if grid_size < MIN_GRID_SIZE or grid_size > MAX_GRID_SIZE:
         raise InvalidAPIUsage("The grid size must be between 8 and 100")
 
     if "difficulty" in content:

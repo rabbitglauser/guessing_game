@@ -1,4 +1,3 @@
-import random
 import time
 
 from db import DB
