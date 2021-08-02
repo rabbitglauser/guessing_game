@@ -48,7 +48,28 @@ def get_unique_boat_names(num_boats):
 
 
 def find_random_location_for_boat(grid_size, boat_length, orientation, boats):
-    # TODO: find a random location that does not intersect another already existing boat
+    # while there is an collision of existing boats
+    num_searches = 0
+    while True:
+        num_searches += 1
+        # search for a boat location that is on the grid and possible to add
+        x_loc, y_loc = get_location_in_grid(grid_size, boat_length, orientation)
+        coordinates = calculate_boat_coordinates(grid_size, x_loc, y_loc, boat_length)
+
+        # check if the new boat is going to intersection with the existing boats
+        if no_collision_with_existing_boats(coordinates, boats):
+            return coordinates
+        if num_searches > 100:
+            raise InvalidAPIUsage(
+                "Unable to construct the game with the given parameters. Can not places boats on grid")
+
+
+#  Get the starting point coordinates for the boat, taking into account
+#  the length and orientation of the boat
+def get_location_in_grid(grid_size, boat_length, orientation):
+    # TODO: Find a location in the grid which will actually be able to fit your boat in the grid
+
+    # get a random location for the boat
     if orientation == 0:  # HORIZONTAL
         pass
     if orientation == 1:  # VERTICAL
@@ -56,26 +77,17 @@ def find_random_location_for_boat(grid_size, boat_length, orientation, boats):
 
     x_loc = random.randint(0, grid_size - 1)
     y_loc = random.randint(0, grid_size - 1)
-
-    coordinates = [{"x": x_loc, "y": y_loc}]
-
-    # while there is an intersection of existing boats
-    num_searches = 0
-    while True:
-        num_searches += 1
-
-        # get a random location for the boat
-
-        # get the coordinates for the boat
-
-        # check if the new boat is going to intersection with the existing boats
-        if no_intersection_with_existing_boats(coordinates, boats):
-            return coordinates
-        if num_searches > 100:
-            raise InvalidAPIUsage(
-                "Unable to construct the game with the given parameters. Can not places boats on grid")
+    return x_loc, y_loc
 
 
-def no_intersection_with_existing_boats(coordinates, boats):
-    # check for an intersection between new boat and existing boats
+# return a list of the x,y coordinates of every point in the boat
+def calculate_boat_coordinates(grid_size, x_loc, y_loc, boat_length):
+    # TODO: calculate the actual boat coordinates
+    return [{"x": x_loc, "y": y_loc}]
+
+
+# Check if the coordinates of the boat collide with any of the coordinates of the other boats
+def no_collision_with_existing_boats(new_boat_coordinates, boats):
+    # TODO check for an collision between new boat and existing boats
+
     return True
