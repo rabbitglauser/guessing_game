@@ -2,6 +2,9 @@ import random
 
 from user import InvalidAPIUsage
 
+MIN_BOAT_LENGTH = 2
+MAX_BOAT_LENGTH = 4  # 5
+
 battle_ship_list = []
 with open("us_states.txt", "r") as f:
     states = f.readlines()
@@ -30,7 +33,7 @@ def calculate_number_of_boats(grid_size, difficulty_level):
 
 
 def make_random_boat(boat_name, grid_size, boats):
-    boat_length = random.randint(2, 5)
+    boat_length = random.randint(MIN_BOAT_LENGTH, MAX_BOAT_LENGTH)
     orientation = random.randint(0, 1)
     orientation_str = "H" if orientation == 0 else "V"
     coordinates = find_random_location_for_boat(grid_size, boat_length, orientation, boats)
@@ -53,8 +56,8 @@ def find_random_location_for_boat(grid_size, boat_length, orientation, boats):
     while True:
         num_searches += 1
         # search for a boat location that is on the grid and possible to add
-        x_loc, y_loc = get_location_in_grid(grid_size, boat_length, orientation)
-        coordinates = calculate_boat_coordinates(grid_size, x_loc, y_loc, boat_length)
+        start_coordinate = get_location_in_grid(grid_size, boat_length, orientation)
+        coordinates = calculate_boat_coordinates(start_coordinate, orientation, boat_length)
 
         # check if the new boat is going to intersection with the existing boats
         if no_collision_with_existing_boats(coordinates, boats):
@@ -77,13 +80,19 @@ def get_location_in_grid(grid_size, boat_length, orientation):
 
     x_loc = random.randint(0, grid_size - 1)
     y_loc = random.randint(0, grid_size - 1)
-    return x_loc, y_loc
+    return {"x": x_loc, "y": y_loc}
 
 
 # return a list of the x,y coordinates of every point in the boat
-def calculate_boat_coordinates(grid_size, x_loc, y_loc, boat_length):
-    # TODO: calculate the actual boat coordinates
-    return [{"x": x_loc, "y": y_loc}]
+def calculate_boat_coordinates(start_coordinate, orientation, boat_length):
+    coordinates = [start_coordinate]
+    x = start_coordinate["x"]
+    y = start_coordinate["y"]
+    for _ in range(boat_length - 1):
+        x = x + 1 if orientation == 0 else x  # HORIZONTAL
+        y = y + 1 if orientation == 1 else y  # VERTICAL
+        coordinates.append({"x": x, "y": y})
+    return coordinates
 
 
 # Check if the coordinates of the boat collide with any of the coordinates of the other boats
