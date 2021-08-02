@@ -77,8 +77,8 @@ def get_location_in_grid(grid_size, boat_length, orientation):
     # get a random location for the boat
     x_limits = grid_size - boat_length if orientation == HORIZONTAL else grid_size
     y_limits = grid_size - boat_length if orientation == VERTICAL else grid_size
-    x_loc = random.randint(0, x_limits)
-    y_loc = random.randint(0, y_limits)
+    x_loc = random.randint(0, x_limits - 1)
+    y_loc = random.randint(0, y_limits - 1)
     return {"x": x_loc, "y": y_loc}
 
 
@@ -98,7 +98,10 @@ def calculate_boat_coordinates(start_coordinate, orientation, boat_length):
 def no_collision_with_existing_boats(new_boat_coordinates, boats):
     # TODO check for an collision between new boat and existing boats
 
-    print(new_boat_coordinates)
-    print(boats)
+    print("New boat", new_boat_coordinates)
+    print("Existing Boats", boats)
+    print()
+
+
 
     return True
