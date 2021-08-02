@@ -27,8 +27,8 @@ def validate_grid_game_parameters(content):
         raise InvalidAPIUsage("The grid_size is a mandatory parameter for this game")
 
     grid_size = content["grid_size"]
-    if grid_size < 10 or grid_size > 100:
-        raise InvalidAPIUsage("sorry you cant have a grid bigger than 100 or less than 10")
+    if grid_size < 8 or grid_size > 100:
+        raise InvalidAPIUsage("The grid size must be between 8 and 100")
 
     if "difficulty" in content:
         difficulty = content["difficulty"]

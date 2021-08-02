@@ -32,8 +32,9 @@ def calculate_number_of_boats(grid_size, difficulty_level):
 def make_random_boat(boat_name, grid_size, boats):
     boat_length = random.randint(2, 5)
     orientation = random.randint(0, 1)
+    orientation_str = "H" if orientation == 0 else "V"
     coordinates = find_random_location_for_boat(grid_size, boat_length, orientation, boats)
-    boat = {"name": boat_name, "coordinates": coordinates}
+    boat = {"name": boat_name, "length": boat_length, "orientation": orientation_str, "coordinates": coordinates}
     return boat
 
 
@@ -48,7 +49,15 @@ def get_unique_boat_names(num_boats):
 
 def find_random_location_for_boat(grid_size, boat_length, orientation, boats):
     # TODO: find a random location that does not intersect another already existing boat
-    coordinates = []
+    if orientation == 0:  # HORIZONTAL
+        pass
+    if orientation == 1:  # VERTICAL
+        pass
+
+    x_loc = random.randint(0, grid_size - 1)
+    y_loc = random.randint(0, grid_size - 1)
+
+    coordinates = [{"x": x_loc, "y": y_loc}]
 
     # while there is an intersection of existing boats
     num_searches = 0
